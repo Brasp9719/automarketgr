@@ -184,6 +184,15 @@
     border-radius:2px;
     letter-spacing:0.05em;
   }
+  .photo-count{
+    position:absolute;bottom:12px;right:12px;
+    background:rgba(20,23,26,0.85);
+    color:var(--paper);
+    font-family:'Roboto Mono',monospace;
+    font-size:0.7rem;
+    padding:3px 8px;
+    border-radius:2px;
+  }
   .card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;flex:1;}
   .card-title{font-size:1.15rem;font-weight:600;letter-spacing:0.01em;}
   .card-sub{color:var(--muted);font-size:0.82rem;font-family:'Roboto Mono',monospace;}
@@ -232,8 +241,36 @@
     grid-template-columns:1.1fr 1fr;
     overflow:hidden;
   }
-  .modal-media{background:#0f1214;position:relative;}
-  .modal-media img{width:100%;height:100%;object-fit:cover;max-height:520px;}
+  .modal-media{background:#0f1214;position:relative;display:flex;flex-direction:column;}
+  .modal-media img{width:100%;height:100%;object-fit:cover;max-height:440px;}
+  .gallery-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:38px;height:38px;border-radius:50%;
+    background:rgba(20,23,26,0.75);
+    border:1px solid #3a4147;
+    color:var(--paper);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;font-size:1.1rem;
+    user-select:none;
+  }
+  .gallery-nav:hover{background:rgba(20,23,26,0.95);}
+  .gallery-prev{left:14px;}
+  .gallery-next{right:14px;}
+  .gallery-thumbs{
+    display:flex;gap:8px;padding:12px;
+    background:#0a0c0d;
+    overflow-x:auto;
+  }
+  .gallery-thumbs img{
+    width:64px;height:48px;object-fit:cover;
+    border-radius:2px;cursor:pointer;
+    border:2px solid transparent;
+    opacity:0.55;
+    flex-shrink:0;
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+  .gallery-thumbs img:hover{opacity:0.85;}
+  .gallery-thumbs img.active{opacity:1;border-color:var(--amber);}
   .modal-close{
     position:absolute;top:14px;right:14px;
     width:34px;height:34px;
@@ -397,8 +434,13 @@
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-media">
-      <img id="modalImg" src="" alt="">
-      <div class="modal-close" id="modalClose">✕</div>
+      <div style="position:relative;flex:1;">
+        <img id="modalImg" src="" alt="">
+        <div class="modal-close" id="modalClose">✕</div>
+        <div class="gallery-nav gallery-prev" id="galleryPrev">‹</div>
+        <div class="gallery-nav gallery-next" id="galleryNext">›</div>
+      </div>
+      <div class="gallery-thumbs" id="galleryThumbs"></div>
     </div>
     <div class="modal-body">
       <span class="plate-badge" id="modalStock"></span>
@@ -435,54 +477,54 @@ const CONFIG = {
    mileage (km), transmission, fuel, color, description, image
 ========================================================= */
 const VEHICLES = [
-  {
-    id: 1, stock: "UNIT-01", brand: "Toyota", model: "Tacoma", year: 2019,
-    price: 20900000, mileage: 75800, transmission: "Automática", fuel: "Gasolina",
-    color: "Crema", description: "Version TRD Off-road, controladores de traccion superiores, suspension Bilstein. Aire acondicionado full, cámara de reversa y pantalla táctil. Pick up en excelentes condiciones",
-    image: "fotos/tacoma.jpg"
-  },
+{
+  id: 1, stock: "UNIT-01", brand: "Toyota", model: "Tacoma", year: 2019,
+  price: 2090000, mileage: 75800, transmission: "Automática", fuel: "Gasolina",
+  color: "Crema", description: "Version TRD Off-road, controles de traccion en cabecera, suspension Bilstein. Aire acondicionado full, cámara de reversa y pantalla táctil. Pick up en excelentes condiciones",
+  images: ["fotos/tacoma1.jpg", "fotos/tacoma2.jpg",, "fotos/tacoma3.jpg", "fotos/tacoma4.jpg", "fotos/tacoma5.jpg", "fotos/tacoma.jpg", "fotos/tacoma(3).jpg" ]
+},
   {
     id: 2, stock: "UNIT-02", brand: "Hyundai", model: "Tucson", year: 2022,
     price: 16900000, mileage: 21000, transmission: "Automática", fuel: "Gasolina",
     color: "Gris grafito", description: "SUV compacta, ideal para ciudad y carretera. Sensores de parqueo, sunroof panorámico y garantía de fábrica vigente.",
-    image: "https://picsum.photos/seed/tucson/700/500"
+    images: ["https://picsum.photos/seed/tucson/700/500", "https://picsum.photos/seed/tucson2/700/500"]
   },
   {
     id: 3, stock: "UNIT-03", brand: "Suzuki", model: "Swift GL", year: 2020,
     price: 8200000, mileage: 45000, transmission: "Manual", fuel: "Gasolina",
     color: "Rojo",
 description: "Compacto económico, bajo consumo de combustible, perfecto como primer carro. Revisión técnica vehicular al día.",
-    image: "https://picsum.photos/seed/swift/700/500"
+    images: ["https://picsum.photos/seed/swift/700/500"]
   },
   {
     id: 4, stock: "UNIT-04", brand: "Nissan", model: "Frontier", year: 2019,
     price: 15400000, mileage: 62000, transmission: "Automática", fuel: "Diésel",
     color: "Negro", description: "Pick-up 4x4 lista para trabajo o aventura. Llantas nuevas, batería nueva, caja de carga con base para tapa.",
-    image: "https://picsum.photos/seed/frontier/700/500"
+    images: ["https://picsum.photos/seed/frontier/700/500", "https://picsum.photos/seed/frontier2/700/500"]
   },
   {
     id: 5, stock: "UNIT-05", brand: "Kia", model: "Rio", year: 2021,
     price: 9500000, mileage: 30000, transmission: "Automática", fuel: "Gasolina",
     color: "Azul", description: "Hatchback ágil y espacioso, cámara de reversa, Bluetooth y control de crucero. Ideal para uso diario.",
-    image: "https://picsum.photos/seed/rio/700/500"
+    images: ["https://picsum.photos/seed/rio/700/500"]
   },
   {
     id: 6, stock: "UNIT-06", brand: "Toyota", model: "RAV4", year: 2023,
     price: 21900000, mileage: 12000, transmission: "Automática", fuel: "Híbrido",
     color: "Blanco", description: "SUV híbrida casi nueva, bajísimo consumo, garantía vigente. Tracción integral y asistente de mantenimiento de carril.",
-    image: "https://picsum.photos/seed/rav4/700/500"
+    images: ["https://picsum.photos/seed/rav4/700/500", "https://picsum.photos/seed/rav4b/700/500", "https://picsum.photos/seed/rav4c/700/500"]
   },
   {
     id: 7, stock: "UNIT-07", brand: "Chevrolet", model: "Spark", year: 2018,
     price: 6300000, mileage: 71000, transmission: "Manual", fuel: "Gasolina",
     color: "Amarillo", description: "Carro urbano compacto, fácil de parquear, bajo mantenimiento. Excelente opción de entrada.",
-    image: "https://picsum.photos/seed/spark/700/500"
+    images: ["https://picsum.photos/seed/spark/700/500"]
   },
   {
     id: 8, stock: "UNIT-08", brand: "Honda", model: "CR-V", year: 2020,
     price: 17800000, mileage: 40000, transmission: "Automática", fuel: "Gasolina",
     color: "Gris plata", description: "SUV mediana, amplio espacio de carga, techo panorámico y asientos de cuero. Muy bien cuidada.",
-    image: "https://picsum.photos/seed/crv/700/500"
+    images: ["https://picsum.photos/seed/crv/700/500", "https://picsum.photos/seed/crv2/700/500"]
   }
 ];
 
@@ -538,8 +580,9 @@ function cardHTML(v){
   return `
     <div class="card" data-id="${v.id}">
       <div class="card-media">
-        <img src="${v.image}" alt="${v.brand} ${v.model} ${v.year}" loading="lazy">
+        <img src="${v.images[0]}" alt="${v.brand} ${v.model} ${v.year}" loading="lazy">
         <span class="plate-badge">${v.stock}</span>
+        ${v.images.length > 1 ? `<span class="photo-count">📷 ${v.images.length}</span>` : ""}
       </div>
       <div class="card-body">
         <div>
@@ -590,11 +633,41 @@ render();
 
 // Modal
 const modalOverlay = document.getElementById("modalOverlay");
+let currentVehicle = null;
+let currentPhotoIndex = 0;
+
+function showPhoto(index){
+  if(!currentVehicle) return;
+  const imgs = currentVehicle.images;
+  currentPhotoIndex = (index + imgs.length) % imgs.length;
+  document.getElementById("modalImg").src = imgs[currentPhotoIndex];
+  document.getElementById("modalImg").alt = `${currentVehicle.brand} ${currentVehicle.model} — foto ${currentPhotoIndex+1}`;
+  document.querySelectorAll("#galleryThumbs img").forEach((t,i)=>{
+    t.classList.toggle("active", i===currentPhotoIndex);
+  });
+}
+
+document.getElementById("galleryPrev").addEventListener("click", ()=> showPhoto(currentPhotoIndex-1));
+document.getElementById("galleryNext").addEventListener("click", ()=> showPhoto(currentPhotoIndex+1));
+
 function openModal(id){
   const v = VEHICLES.find(x=>x.id===id);
   if(!v) return;
-  document.getElementById("modalImg").src = v.image;
-  document.getElementById("modalImg").alt = `${v.brand} ${v.model}`;
+  currentVehicle = v;
+  currentPhotoIndex = 0;
+
+  const thumbsWrap = document.getElementById("galleryThumbs");
+  thumbsWrap.innerHTML = v.images.map((src,i)=>
+    `<img src="${src}" alt="Foto ${i+1}" data-index="${i}">`
+  ).join("");
+  thumbsWrap.querySelectorAll("img").forEach(thumb=>{
+    thumb.addEventListener("click", ()=> showPhoto(Number(thumb.dataset.index)));
+  });
+  document.getElementById("galleryPrev").style.display = v.images.length > 1 ? "flex" : "none";
+  document.getElementById("galleryNext").style.display = v.images.length > 1 ? "flex" : "none";
+  thumbsWrap.style.display = v.images.length > 1 ? "flex" : "none";
+
+  showPhoto(0);
   document.getElementById("modalStock").textContent = v.stock;
   document.getElementById("modalTitle").textContent = `${v.brand} ${v.model} ${v.year}`;
   document.getElementById("modalPrice").textContent = formatPrice(v.price);
@@ -617,7 +690,12 @@ function closeModal(){
 }
 document.getElementById("modalClose").addEventListener("click", closeModal);
 modalOverlay.addEventListener("click", (e)=>{ if(e.target===modalOverlay) closeModal(); });
-document.addEventListener("keydown", (e)=>{ if(e.key==="Escape") closeModal(); });
+document.addEventListener("keydown", (e)=>{
+  if(!modalOverlay.classList.contains("open")) return;
+  if(e.key==="Escape") closeModal();
+  if(e.key==="ArrowLeft") showPhoto(currentPhotoIndex-1);
+  if(e.key==="ArrowRight") showPhoto(currentPhotoIndex+1);
+});
 
 // QR code — apunta a WhatsApp por defecto; cambia a CONFIG.siteUrl cuando publiques el sitio
 new QRCode(document.getElementById("qrcode"), {
