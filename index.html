@@ -20,6 +20,7 @@
     --radius:2px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{overflow-x:hidden;max-width:100%;}
   html{scroll-behavior:smooth;}
   body{
     background:var(--asphalt);
@@ -48,12 +49,15 @@
   .header-inner{
     display:flex;align-items:center;justify-content:space-between;
     padding:16px 24px;
+    min-width:0;
   }
   .brand{
     display:flex;align-items:center;gap:10px;
     font-family:'Oswald',sans-serif;
     font-size:1.3rem;font-weight:700;letter-spacing:0.04em;
+    min-width:0;overflow:hidden;
   }
+  .brand span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .brand .plate{
     border:2px solid var(--amber);
     border-radius:3px;
@@ -367,6 +371,12 @@
     .modal-media img{max-height:320px;}
     .contact-inner{grid-template-columns:1fr;text-align:left;}
     .qr-box{justify-self:start;}
+  }
+  @media (max-width:420px){
+    .header-inner{padding:12px 16px;gap:8px;}
+    .brand{font-size:1.05rem;gap:6px;}
+    .brand .plate{display:none;}
+    #waNavBtn{padding:9px 12px;font-size:0.72rem;}
   }
   @media (prefers-reduced-motion:reduce){
     *{transition:none !important;}
