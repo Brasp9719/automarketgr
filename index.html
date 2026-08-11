@@ -193,6 +193,21 @@
     padding:3px 8px;
     border-radius:2px;
   }
+  .sold-badge{
+    position:absolute;top:12px;right:12px;
+    background:var(--rust);
+    color:var(--paper);
+    font-family:'Oswald',sans-serif;
+    font-size:0.72rem;
+    font-weight:700;
+    letter-spacing:0.08em;
+    padding:4px 10px;
+    border-radius:2px;
+    text-transform:uppercase;
+  }
+  .card.is-sold{opacity:0.55;}
+  .card.is-sold .card-media img{filter:grayscale(65%);}
+  .modal-body .sold-badge{position:static;display:inline-block;width:fit-content;margin-left:8px;}
   .card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:10px;flex:1;}
   .card-title{font-size:1.15rem;font-weight:600;letter-spacing:0.01em;}
   .card-sub{color:var(--muted);font-size:0.82rem;font-family:'Roboto Mono',monospace;}
@@ -469,62 +484,74 @@ const CONFIG = {
 };
 
 /* =========================================================
-   INVENTARIO DE VEHÍCULOS 
-   
+   INVENTARIO DE VEHÍCULOS
+   Cada vehículo es un objeto con estos campos:
+   id, stock, brand, model, year, price (número, colones),
+   mileage (km), transmission, fuel, color, description, images
+   REGLA IMPORTANTE: "description" debe quedar en UNA sola línea,
+   sin saltos de línea dentro de las comillas.
 ========================================================= */
 const VEHICLES = [
   {
     id: 1, stock: "UNIT-01", brand: "Toyota", model: "Tacoma", year: 2019,
     price: 20900000, mileage: 46600, transmission: "Automática", fuel: "Gasolina",
     color: "Crema", description: "Toyota Tacoma 2019 TRD Off-Road (Versión Americana). Equipada con tracción 4x4, suspensión Bilstein, controles de tracción todoterreno en cabecera, aire acondicionado, pantalla táctil y cámara de reversa. Pickup en excelentes condiciones mecánicas y estéticas, reconocida por su confiabilidad, desempeño y capacidad para el trabajo o la aventura. Garantía superior.",
-    images: ["fotos/tacoma1.jpg", "fotos/tacoma2.jpg", "fotos/tacoma3.jpg", "fotos/tacoma4.jpg", "fotos/tacoma5.jpg", "fotos/tacoma6.jpg", "fotos/tacoma7.jpg"]
+    images: ["fotos/tacoma1.jpg", "fotos/tacoma2.jpg", "fotos/tacoma3.jpg", "fotos/tacoma4.jpg", "fotos/tacoma5.jpg", "fotos/tacoma6.jpg", "fotos/tacoma7.jpg"],
+    sold: false
   },
   {
     id: 2, stock: "UNIT-02", brand: "Hyundai", model: "Tucson", year: 2016,
     price: 9800000, mileage: 86114, transmission: "Automática", fuel: "Gasolina",
     color: "Azul atlántida", description: "Hyundai Tucson 2016 (Versión Americana). SUV compacta, cómoda y confiable, ideal para la ciudad y viajes por carretera. Equipada con motor 2.0L de excelente rendimiento, aire acondicionado en perfecto funcionamiento, cámara de reversa y amplio espacio interior. Se encuentra en excelentes condiciones, lista para disfrutar. Garantía superior.",
-    images: ["fotos/Tucson1.jpg","fotos/Tucson2.jpg","fotos/Tucson3.jpg","fotos/Tucson4.jpg","fotos/Tucson5.jpg","fotos/Tucson6.jpg","fotos/Tucson7.jpg",]
+    images: ["fotos/Tucson1.jpg", "fotos/Tucson2.jpg", "fotos/Tucson3.jpg", "fotos/Tucson4.jpg", "fotos/Tucson5.jpg", "fotos/Tucson6.jpg", "fotos/Tucson7.jpg"],
+    sold: false
   },
   {
     id: 3, stock: "UNIT-03", brand: "Nissan", model: "Frontier Pro4x", year: 2013,
     price: 10400000, mileage: 45000, transmission: "Automática", fuel: "Gasolina",
     color: "Gris", description: "Potente motor V6 3.8L, 4x4 real; sistema Shift-on-the-fly con duplicación (4LO) y bloqueo de diferencial trasero de fábrica, automática, cámara reversa y suspensión todoterreno. Pick-up que ofrece la suavidad de un SUV y la fuerza de un camión. Garantía superior.",
-    images: ["fotos/Frontier1.jpg","fotos/Frontier2.jpg","fotos/Frontier3.jpg","fotos/Frontier4.jpg","fotos/Frontier5.jpg","fotos/Frontier6.jpg","fotos/Frontier7.jpg"]
+    images: ["fotos/Frontier1.jpg", "fotos/Frontier2.jpg", "fotos/Frontier3.jpg", "fotos/Frontier4.jpg", "fotos/Frontier5.jpg", "fotos/Frontier6.jpg", "fotos/Frontier7.jpg"],
+    sold: false
   },
   {
     id: 4, stock: "UNIT-04", brand: "Nissan", model: "Frontier SE", year: 2008,
-    price: 7850000, mileage: 129230, transmission: "Automática", fuel: "Gasolina",
+    price: 0, mileage: 129230, transmission: "Automática", fuel: "Gasolina",
     color: "Rojo", description: "Nissan Frontier SE 2008. Pick-up 4x2, resistente y confiable, equipada con potente motor 2.4L, ideal para trabajo diario o aventura. Cuenta con suspensión Premium Dobinson para mayor desempeño y confort. Vehículo en excelentes condiciones, listo para trabajar desde el primer día. Garantía superior.",
-    images: ["fotos/FrontierSE1.jpg","fotos/FrontierSE2.jpg","fotos/FrontierSE3.jpg", "fotos/FrontierSE4.jpg", "fotos/FrontierSE5.jpg", "fotos/FrontierSE6.jpg", "fotos/FrontierSE7.jpg"]
+    images: ["fotos/FrontierSE1.jpg", "fotos/FrontierSE2.jpg", "fotos/FrontierSE3.jpg", "fotos/FrontierSE4.jpg", "fotos/FrontierSE5.jpg", "fotos/FrontierSE6.jpg", "fotos/FrontierSE7.jpg"],
+    sold: true
   },
   {
     id: 5, stock: "UNIT-05", brand: "Suzuki", model: "Jimny", year: 2012,
     price: 5800000, mileage: 134800, transmission: "Manual", fuel: "Gasolina",
     color: "Blanco", description: "Suzuki Jimny 2012 Manual. Compacto, ligero y con auténticas capacidades todoterreno. Equipado con motor 1.3L, transmisión manual de 5 velocidades y sistema 4x4 conectable con caja reductora (Low), ideal para ciudad, montaña o aventura. Su diseño resistente, excelente rendimiento de combustible y reconocida confiabilidad lo convierten en una opción perfecta para quienes buscan un verdadero 4x4. Garantía superior.",
-    images: ["fotos/Jimny1.jpg","fotos/Jimny2.jpg","fotos/Jimny3.jpg","fotos/Jimny4.jpg","fotos/Jimny5.jpg","fotos/Jimny6.jpg"]
+    images: ["fotos/Jimny1.jpg", "fotos/Jimny2.jpg", "fotos/Jimny3.jpg", "fotos/Jimny4.jpg", "fotos/Jimny5.jpg", "fotos/Jimny6.jpg"],
+    sold: false
   },
   {
     id: 6, stock: "UNIT-06", brand: "Hyundai", model: "Elantra Limited", year: 2011,
     price: 5300000, mileage: 157230, transmission: "Automática", fuel: "Gasolina",
-    color: "Rojo perlado", description: "Sedán con estilo y excelente equipamiento. Versión full extras con botón de encendido (Smart Key), aire acondicionado en perfecto funcionamiento, paquete eléctrico completo, asientos, espejos y cierre central eléctrico, techo corredizo (sunroof) eléctrico y eficiente motor 1.8 EcoDrive, ideal para un manejo cómodo y económico. Garantia superior",
-    images: ["fotos/Elantra1.jpg", "fotos/Elantra2.jpg", "fotos/Elantra3.jpg","fotos/Elantra4.jpg","fotos/Elantra5.jpg","fotos/Elantra6.jpg","fotos/Elantra7.jpg", ]
+    color: "Rojo perlado", description: "Sedán con estilo y excelente equipamiento. Versión full extras con botón de encendido (Smart Key), aire acondicionado en perfecto funcionamiento, paquete eléctrico completo, asientos, espejos y cierre central eléctrico, techo corredizo (sunroof) eléctrico y eficiente motor 1.8 EcoDrive, ideal para un manejo cómodo y económico. Garantía superior.",
+    images: ["fotos/Elantra1.jpg", "fotos/Elantra2.jpg", "fotos/Elantra3.jpg", "fotos/Elantra4.jpg", "fotos/Elantra5.jpg", "fotos/Elantra6.jpg", "fotos/Elantra7.jpg"],
+    sold: false
   },
   {
     id: 7, stock: "UNIT-07", brand: "Toyota", model: "4Runner SR5", year: 2016,
     price: 19800000, mileage: 84080, transmission: "Automática", fuel: "Gasolina",
     color: "Blanco hueso", description: "Toyota 4Runner SR5 4x4 2016. SUV de 5 pasajeros con potente motor V6 4.0L, transmisión automática y auténtica capacidad todoterreno. Equipada con modos 2H, 4H y 4L, además de asistencias A-TRAC, TRAC, HAC y DAC para un máximo desempeño fuera de carretera. Incluye pantalla táctil, cámara de reversa y amplio espacio interior. Garantía superior.",
-      images: ["fotos/4Runner6.jpg", "fotos/4Runner7.jpg","fotos/4Runner4.jpg", "fotos/4Runner3.jpg", "fotos/4Runner5.jpg", "fotos/4Runner1.jpg", "fotos/4Runner2.jpg", "fotos/4Runner8.jpg"]
+    images: ["fotos/4Runner1.jpg", "fotos/4Runner2.jpg", "fotos/4Runner3.jpg", "fotos/4Runner4.jpg", "fotos/4Runner5.jpg", "fotos/4Runner6.jpg", "fotos/4Runner7.jpg", "fotos/4Runner8.jpg"],
+    sold: false
   },
   {
     id: 8, stock: "UNIT-08", brand: "Honda", model: "CR-V", year: 2015,
     price: 10300000, mileage: 147450, transmission: "Automática", fuel: "Gasolina",
     color: "Blanco perlado", description: "SUV mediana 4x4, amplio espacio de carga, techo panorámico. Equipada con motor 2.4L Earth Dreams, con sistema AWD Real Time. Cuenta con Eco Drive, asientos eléctricos con calefacción, botón de encendido, aire acondicionado, cámara de reversa y excelente espacio interior. SUV cómoda, eficiente y confiable, ideal para ciudad, carretera y aventura. Garantía superior.",
-    images: ["fotos/CRV1.jpg", "fotos/CRV2.jpg", "fotos/CRV3.jpg", "fotos/CRV4.jpg", "fotos/CRV5.jpg", "fotos/CRV6.jpg", "fotos/CRV7.jpg"]
+    images: ["fotos/CRV1.jpg", "fotos/CRV2.jpg", "fotos/CRV3.jpg", "fotos/CRV4.jpg", "fotos/CRV5.jpg", "fotos/CRV6.jpg", "fotos/CRV7.jpg"],
+    sold: false
   }
 ];
 
 /* =========================================================
-   LÓGICA DEL SITIO 
+   LÓGICA DEL SITIO (no es necesario editar esto)
 ========================================================= */
 function formatPrice(n){
   return "₡" + n.toLocaleString("es-CR");
@@ -573,10 +600,11 @@ const sortSelect = document.getElementById("sortSelect");
 
 function cardHTML(v){
   return `
-    <div class="card" data-id="${v.id}">
+    <div class="card ${v.sold ? "is-sold" : ""}" data-id="${v.id}">
       <div class="card-media">
         <img src="${v.images[0]}" alt="${v.brand} ${v.model} ${v.year}" loading="lazy">
         <span class="plate-badge">${v.stock}</span>
+        ${v.sold ? `<span class="sold-badge">Vendido</span>` : ""}
         ${v.images.length > 1 ? `<span class="photo-count">📷 ${v.images.length}</span>` : ""}
       </div>
       <div class="card-body">
@@ -667,6 +695,14 @@ function openModal(id){
   document.getElementById("modalTitle").textContent = `${v.brand} ${v.model} ${v.year}`;
   document.getElementById("modalPrice").textContent = formatPrice(v.price);
   document.getElementById("modalDesc").textContent = v.description;
+  const existingSoldTag = document.querySelector(".modal-body .sold-badge");
+  if(existingSoldTag) existingSoldTag.remove();
+  if(v.sold){
+    const tag = document.createElement("span");
+    tag.className = "sold-badge";
+    tag.textContent = "Vendido";
+    document.getElementById("modalStock").insertAdjacentElement("afterend", tag);
+  }
   document.getElementById("modalSpecs").innerHTML = `
     <div><span>Kilometraje</span><b>${formatKm(v.mileage)}</b></div>
     <div><span>Transmisión</span><b>${v.transmission}</b></div>
